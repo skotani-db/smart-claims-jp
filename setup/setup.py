@@ -95,21 +95,11 @@ def tear_down():
     shutil.rmtree(temp_directory)
   except:
     pass
-  dbutils.fs.rm(home_directory, True)
   spark.sql("DROP DATABASE IF EXISTS {} CASCADE".format(database_name))
-  dbutils.fs.rm(getParam("model_dir_on_dbfs"),recurse=True)
-  dbutils.fs.rm(getParam("image_dir_on_dbfs"),recurse=True)
-  dbutils.fs.rm(getParam("damage_severity_model_dir"),recurse=True)
-  dbutils.fs.rm(getParam("home_dir"),recurse=True)
-  dbutils.fs.rm(getParam("temp_dir"),recurse=True)
   
 def setup():
-  spark.sql("CREATE DATABASE IF NOT EXISTS {}".format(database_name))
-  spark.sql("USE DATABASE {}".format(database_name))
-
-  # データベースと同様に、実際のコンテンツを指定されたパスに保存する
-  dbutils.fs.mkdirs(home_directory)
-  dbutils.fs.mkdirs(temp_directory)
+  spark.sql("CREATE SCHEMA IF NOT EXISTS {}".format(database_name))
+  spark.sql("USE SCHEMA {}".format(database_name))
 
 #   # ローカルディスクに一時データを保存する場合
 #   Path(temp_directory).mkdir(parents=True, exist_ok=True)

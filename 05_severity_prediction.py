@@ -16,6 +16,8 @@ import os
 import mlflow
 from pyspark.sql.functions import regexp_extract, col, split, size
 
+mlflow.set_registry_uri("databricks-uc")
+
 # COMMAND ----------
 
 metadata_df = spark.read.format("csv").option("header", "true").load(getParam("Accident_metadata_path"))
@@ -40,7 +42,7 @@ accident_df = accident_df_id.toPandas()
 
 # COMMAND ----------
 
-model_production_uri = "models:/{}/production".format(getParam("damage_severity_model_name"))
+model_production_uri = "models:/{}/champion".format(getParam("damage_severity_model_name"))
  
 print("URI から登録済みモデルバージョンを読み込み中: '{model_uri}'".format(model_uri=model_production_uri))
 wrapper = mlflow.pyfunc.load_model(model_production_uri)
@@ -72,4 +74,4 @@ display(accident_metadata_df)
 
 output_location = getParam("prediction_path")
 accident_metadata_df.write.format("delta").mode("overwrite").save(output_location)
-spark.sql("CREATE TABLE IF NOT EXISTS silver_accident USING DELTA LOCATION '{}' ".format(output_location))
+spark.sql("CREATE TABLE IF NOT EXISTS silver_accident AS SELECT * FROM delta.`{}`".format(output_location))

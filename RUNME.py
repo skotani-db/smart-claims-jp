@@ -66,7 +66,7 @@ solacc_config_database = "databricks_solacc"
 dlt_config_table = f"{solacc_config_database}.dlt"
 dbsql_config_table = f"{solacc_config_database}.dbsql"
 
-spark.sql(f"CREATE DATABASE IF NOT EXISTS {solacc_config_database} LOCATION '/databricks_solacc/'")
+spark.sql(f"CREATE SCHEMA IF NOT EXISTS {solacc_config_database}")
 spark.sql(f"CREATE TABLE IF NOT EXISTS {dlt_config_table} (path STRING, pipeline_id STRING, solacc STRING)")
 spark.sql(f"CREATE TABLE IF NOT EXISTS {dbsql_config_table} (path STRING, id STRING, solacc STRING)")
 

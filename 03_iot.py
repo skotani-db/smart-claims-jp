@@ -12,4 +12,4 @@
 
 # COMMAND ----------
 
-spark.sql("CREATE TABLE IF not exists silver_telematics USING DELTA LOCATION '{}' ".format(getParam('Telematics_path')))
+spark.sql("CREATE TABLE IF NOT EXISTS silver_telematics AS SELECT * FROM delta.`{}`".format(getParam('Telematics_path')))
