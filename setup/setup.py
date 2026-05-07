@@ -1,18 +1,18 @@
 # Databricks notebook source
 # MAGIC %md
 # MAGIC # セットアップ作業
-# MAGIC * スキーマ・ライブラリ・データなどのセットアップのために最初に実行すべきノートブック
+# MAGIC * スキーマ、ライブラリ、データなどをセットアップするために最初に実行すべきノートブック
 # MAGIC * ライブラリ：
-# MAGIC   * geopy：郵便番号から緯度・経度を取得
-# MAGIC   * mlflow-export-import：MLflow モデルレジストリへのモデルインポート用
+# MAGIC   * geopy：郵便番号から緯度/経度を取得する
+# MAGIC   * mlflow-export-import：モデルを MLflow モデルレジストリにインポートする
 # MAGIC * スキーマ：
-# MAGIC   * ユーザー固有 例：{username}_smart_claims
+# MAGIC   * ユーザー固有（例：{username}_smart_claims）
 # MAGIC * ファイルパス：
 # MAGIC   * home_directory = '/FileStore/{}/smart_claims'.format(username)
 # MAGIC   * temp_directory = "/tmp/{}/smart_claims".format(username)
 # MAGIC * モデル：
-# MAGIC   * Model - 新しい登録モデル名
-# MAGIC   * Experiment name - モデルバージョンのために作成されたランを含む実験名
+# MAGIC   * Model - 新しい登録済みモデル名
+# MAGIC   * Experiment name - モデルバージョン用に作成されたランを含むエクスペリメント名
 # MAGIC   * Input folder - エクスポートされたモデルを含む入力ディレクトリ
 # MAGIC * ダッシュボード
 
@@ -43,7 +43,7 @@ main_directory = dbutils.notebook.entry_point.getDbutils().notebook().getContext
 username = dbutils.notebook.entry_point.getDbutils().notebook().getContext().userName().get().split('@')[0]
 user = dbutils.notebook.entry_point.getDbutils().notebook().getContext().userName().get()
 
-# データを別の場所に保存する場合はこのセルを変更してください
+# データを別の場所に保存する場合は、このセルを置き換えてください
 # database_name = '{}_smart_claims'.format(re.sub('\W', '_', username))
 database_name = 'smart_claims'
 
@@ -71,19 +71,19 @@ config = {
   'image_dir_on_dbfs' : 'dbfs:/FileStore/smart_claims',
   'damage_severity_model_dir'    :  '/Users/{}/car_damage_severity'.format(user),
   'damage_severity_model_name'   :  'damage_severity_{}'.format(re.sub('\.', '_', username)),
-  'sql_warehouse_id' : ""
+  'sql_warehouse_id' : ""  
 }
 
 def getParam(s):
   return config[s]
-
-# 設定を Scala に渡す
+ 
+# Scala に設定を渡す
 spark.createDataFrame(pd.DataFrame(config, index=[0])).createOrReplaceTempView('smart_claims_config')
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## クリーンアップとセットアップ（スキーマとファイルパス）
+# MAGIC ## 破棄とセットアップ（スキーマとファイルパス）
 
 # COMMAND ----------
 
@@ -102,12 +102,12 @@ def tear_down():
   dbutils.fs.rm(getParam("damage_severity_model_dir"),recurse=True)
   dbutils.fs.rm(getParam("home_dir"),recurse=True)
   dbutils.fs.rm(getParam("temp_dir"),recurse=True)
-
+  
 def setup():
   spark.sql("CREATE DATABASE IF NOT EXISTS {}".format(database_name))
   spark.sql("USE DATABASE {}".format(database_name))
 
-  # データベースと同様に、指定したパスに実際のコンテンツを保存する
+  # データベースと同様に、実際のコンテンツを指定されたパスに保存する
   dbutils.fs.mkdirs(home_directory)
   dbutils.fs.mkdirs(temp_directory)
 
@@ -131,7 +131,7 @@ setup()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### モデルと画像をドライバーの /tmp にコピー
+# MAGIC ### モデルと画像をドライバー /tmp にコピーする
 
 # COMMAND ----------
 
@@ -143,7 +143,7 @@ setup()
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### モデルと画像をドライバーの /tmp から DBFS にコピー
+# MAGIC ### モデルと画像をドライバー /tmp から DBFS にコピーする
 
 # COMMAND ----------
 
@@ -169,7 +169,7 @@ dbutils.fs.cp("file:/databricks/driver/tmp/resource_bundle/Claims", getParam("Cl
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### DBFS から MLFlow レジストリへモデルをインポート
+# MAGIC ### DBFS から MLflow レジストリへモデルをインポートする
 
 # COMMAND ----------
 
